@@ -3,7 +3,7 @@ import math
 import torch
 from torch import nn
 
-from torchtils import default, rearrange
+import torchtils as tt
 
 # small helper modules
 
@@ -20,12 +20,12 @@ class Residual(nn.Module):
 def Upsample(dim, dim_out=None):
     return nn.Sequential(
         nn.Upsample(scale_factor=2, mode="nearest"),
-        nn.Conv2d(dim, default(dim_out, dim), 3, padding=1),
+        nn.Conv2d(dim, tt.default(dim_out, dim), 3, padding=1),
     )
 
 
 def Downsample(dim, dim_out=None):
-    return nn.Conv2d(dim, default(dim_out, dim), 4, 2, 1)
+    return nn.Conv2d(dim, tt.default(dim_out, dim), 4, 2, 1)
 
 
 class LayerNorm(nn.Module):
@@ -82,8 +82,8 @@ class LearnedSinusoidalPosEmb(nn.Module):
         self.weights = nn.Parameter(torch.randn(half_dim))
 
     def forward(self, x):
-        x = rearrange(x, "b -> b 1")
-        freqs = x * rearrange(self.weights, "d -> 1 d") * 2 * math.pi
+        x = tt.rearrange(x, "b -> b 1")
+        freqs = x * tt.rearrange(self.weights, "d -> 1 d") * 2 * math.pi
         fouriered = torch.cat((freqs.sin(), freqs.cos()), dim=-1)
         fouriered = torch.cat((x, fouriered), dim=-1)
         return fouriered

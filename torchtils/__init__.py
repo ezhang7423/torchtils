@@ -9,14 +9,14 @@ from inspect import isclass
 from pathlib import Path
 from pkgutil import iter_modules
 
-from blocks import *
-from einops import rearrange, reduce
+from .utils import *
+from .blocks import *
 
 # import often used modules
 from torch import einsum, nn
 from torch.nn import functional as F
 from tqdm.auto import tqdm
-from utils import *
+from einops import rearrange, reduce
 
 
 def get_version() -> str:
