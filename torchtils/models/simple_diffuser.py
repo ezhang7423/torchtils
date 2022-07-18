@@ -148,13 +148,13 @@ class Unet(nn.Module):
         out_dim=None,
         dim_mults=(1, 2, 4, 8),
         channels=3,
-        resnet_block_groups=8,
+        num_groups=8,
         learned_variance=False,
         learned_sinusoidal_cond=False,
         learned_sinusoidal_dim=16,
     ):
         super().__init__()
-
+        assert dim >= 4, "Sinusoidal embedding requires minimum dim of 4"
         # determine dimensions
 
         self.channels = channels
@@ -165,7 +165,7 @@ class Unet(nn.Module):
         dims = [init_dim, *map(lambda m: dim * m, dim_mults)]
         in_out = list(zip(dims[:-1], dims[1:]))
 
-        block_klass = partial(ResnetBlock, groups=resnet_block_groups)
+        block_klass = partial(ResnetBlock, groups=num_groups)
 
         # time embeddings
 
@@ -423,7 +423,7 @@ class GaussianDiffusion(nn.Module):
             x0 - extract(self.sqrt_recip_alphas_cumprod, t, x_t.shape) * x_t
         ) / extract(self.sqrt_recipm1_alphas_cumprod, t, x_t.shape)
 
-    def q_posterior(self, x_start, x_t, t):
+    def D(self, x_start, x_t, t):
         posterior_mean = (
             extract(self.posterior_mean_coef1, t, x_t.shape) * x_start
             + extract(self.posterior_mean_coef2, t, x_t.shape) * x_t
