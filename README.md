@@ -15,6 +15,8 @@
 
 eds torch stuff
 
+Diffusion models: https://github.com/lucidrains/denoising-diffusion-pytorch/blob/master/denoising_diffusion_pytorch/denoising_diffusion_pytorch.py
+
 </div>
 
 ## Very first steps
@@ -76,6 +78,7 @@ Poetry's [commands](https://python-poetry.org/docs/cli/#commands) are very intui
 - `poetry publish --build`
 
 etc
+
 </p>
 </details>
 
