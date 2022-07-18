@@ -117,7 +117,7 @@ Articles:
 
 ### Development features
 
-- Supports for `Python 3.9` and higher.
+- Supports for `Python 3.8` and higher.
 - [`Poetry`](https://python-poetry.org/) as the dependencies manager. See configuration in [`pyproject.toml`](https://github.com/ezhang7423/torchtils/blob/master/pyproject.toml) and [`setup.cfg`](https://github.com/ezhang7423/torchtils/blob/master/setup.cfg).
 - Automatic codestyle with [`black`](https://github.com/psf/black), [`isort`](https://github.com/timothycrosley/isort) and [`pyupgrade`](https://github.com/asottile/pyupgrade).
 - Ready-to-use [`pre-commit`](https://pre-commit.com/) hooks with code-formatting.

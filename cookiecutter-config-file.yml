@@ -5,7 +5,7 @@ default_context:
   project_description: "eds torch stuff"
   organization: "torchtils"
   license: "MIT"
-  minimal_python_version: 3.9
+  minimal_python_version: 3.8
   github_name: "ezhang7423"
   email: "ete@ucsb.edu"
   version: "0.1.0"
