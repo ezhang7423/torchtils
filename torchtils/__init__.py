@@ -9,15 +9,17 @@ from inspect import isclass
 from pathlib import Path
 from pkgutil import iter_modules
 
-from .utils import *
-from .blocks import *
+from einops import rearrange, reduce
 
 # import often used modules
 from torch import einsum, nn
 from torch.nn import functional as F
-from tqdm.auto import tqdm
-from einops import rearrange, reduce
 from torchvision.utils import save_image
+from tqdm.auto import tqdm
+
+from .blocks import *
+from .utils import *
+
 
 def get_version() -> str:
     try:
@@ -27,4 +29,3 @@ def get_version() -> str:
 
 
 version: str = get_version()
-
