@@ -3,57 +3,11 @@ import math
 import torch
 from torch import nn
 
-import torchtils as tt
-
+from einops.layers.torch import Rearrange
 # small helper modules
-
-
-class Residual(nn.Module):
-    def __init__(self, fn):
-        super().__init__()
-        self.fn = fn
-
-    def forward(self, x, *args, **kwargs):
-        return self.fn(x, *args, **kwargs) + x
-
-
-def Upsample(dim, dim_out=None):
-    return nn.Sequential(
-        nn.Upsample(scale_factor=2, mode="nearest"),
-        nn.Conv2d(dim, tt.default(dim_out, dim), 3, padding=1),
-    )
-
-
-def Downsample(dim, dim_out=None):
-    return nn.Conv2d(dim, tt.default(dim_out, dim), 4, 2, 1)
-
-
-class LayerNorm(nn.Module):
-    def __init__(self, dim, eps=1e-5):
-        super().__init__()
-        self.eps = eps
-        self.g = nn.Parameter(torch.ones(1, dim, 1, 1))
-        self.b = nn.Parameter(torch.zeros(1, dim, 1, 1))
-
-    def forward(self, x):
-        var = torch.var(x, dim=1, unbiased=False, keepdim=True)
-        mean = torch.mean(x, dim=1, keepdim=True)
-        return (x - mean) / (var + self.eps).sqrt() * self.g + self.b
-
-
-class PreNorm(nn.Module):
-    def __init__(self, dim, fn):
-        super().__init__()
-        self.fn = fn
-        self.norm = LayerNorm(dim)
-
-    def forward(self, x):
-        x = self.norm(x)
-        return self.fn(x)
-
-
-# sinusoidal positional embeds
-
+#----------------------------------------------------------------------------#
+#---------------------------------- modules ----------------------------------#
+#-----------------------------------------------------------------------------#
 
 class SinusoidalPosEmb(nn.Module):
     def __init__(self, dim):
@@ -69,21 +23,37 @@ class SinusoidalPosEmb(nn.Module):
         emb = torch.cat((emb.sin(), emb.cos()), dim=-1)
         return emb
 
-
-class LearnedSinusoidalPosEmb(nn.Module):
-    """following @crowsonkb 's lead with learned sinusoidal pos emb"""
-
-    """ https://github.com/crowsonkb/v-diffusion-jax/blob/master/diffusion/models/danbooru_128.py#L8 """
-
+class Downsample1d(nn.Module):
     def __init__(self, dim):
         super().__init__()
-        assert (dim % 2) == 0
-        half_dim = dim // 2
-        self.weights = nn.Parameter(torch.randn(half_dim))
+        self.conv = nn.Conv1d(dim, dim, 3, 2, 1)
 
     def forward(self, x):
-        x = tt.rearrange(x, "b -> b 1")
-        freqs = x * tt.rearrange(self.weights, "d -> 1 d") * 2 * math.pi
-        fouriered = torch.cat((freqs.sin(), freqs.cos()), dim=-1)
-        fouriered = torch.cat((x, fouriered), dim=-1)
-        return fouriered
+        return self.conv(x)
+
+class Upsample1d(nn.Module):
+    def __init__(self, dim):
+        super().__init__()
+        self.conv = nn.ConvTranspose1d(dim, dim, 4, 2, 1)
+
+    def forward(self, x):
+        return self.conv(x)
+
+class Conv1dBlock(nn.Module):
+    '''
+        Conv1d --> GroupNorm --> Mish
+    '''
+
+    def __init__(self, inp_channels, out_channels, kernel_size, n_groups=8):
+        super().__init__()
+
+        self.block = nn.Sequential(
+            nn.Conv1d(inp_channels, out_channels, kernel_size, padding=kernel_size // 2),
+            Rearrange('batch channels horizon -> batch channels 1 horizon'),
+            nn.GroupNorm(n_groups, out_channels),
+            Rearrange('batch channels 1 horizon -> batch channels horizon'),
+            nn.Mish(),
+        )
+
+    def forward(self, x):
+        return self.block(x)
