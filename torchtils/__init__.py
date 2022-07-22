@@ -17,7 +17,7 @@ from torch.nn import functional as F
 from torchvision.utils import save_image
 from tqdm.auto import tqdm
 
-from .blocks import *
+from .models.blocks import *
 from .utils import *
 
 

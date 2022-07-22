@@ -47,3 +47,4 @@ def convert_image_to(img_type, image):
 
 from .progress import *
 from .arrays import *
+from .model_wrappers import *
