@@ -1,13 +1,11 @@
 import math
 import numpy as np
 import torch
+from torch import nn
 import pytorch_lightning as pl
 from torchtils import (
-    Downsample,
     F,
-    LayerNorm,
     SinusoidalPosEmb,
-    nn,
     rearrange,
 )
 from einops.layers.torch import Rearrange
@@ -57,32 +55,7 @@ class ResidualTemporalBlock(nn.Module):
         out = self.blocks[0](x) + self.time_mlp(t)
         out = self.blocks[1](out)
         return out + self.residual_conv(x)
-class LinearAttention(nn.Module):
-    def __init__(self, dim, heads=4, dim_head=32):
-        super().__init__()
-        self.scale = dim_head**-0.5
-        self.heads = heads
-        hidden_dim = dim_head * heads
-        self.to_qkv = nn.Conv2d(dim, hidden_dim * 3, 1, bias=False)
 
-        self.to_out = nn.Sequential(nn.Conv2d(hidden_dim, dim, 1), LayerNorm(dim))
-
-    def forward(self, x):
-        b, c, h, w = x.shape
-        qkv = self.to_qkv(x).chunk(3, dim=1)
-        q, k, v = map(
-            lambda t: rearrange(t, "b (h c) x y -> b h c (x y)", h=self.heads), qkv
-        )
-
-        q = q.softmax(dim=-2)
-        k = k.softmax(dim=-1)
-
-        q = q * self.scale
-        context = torch.einsum("b h d n, b h e n -> b h d e", k, v)
-
-        out = torch.einsum("b h d e, b h d n -> b h e n", context, q)
-        out = rearrange(out, "b h c (x y) -> b (h c) x y", h=self.heads, x=h, y=w)
-        return self.to_out(out)
 
 # model
 
@@ -313,22 +286,22 @@ class GaussianDiffusion(pl.LightningModule):
         self.clip_denoised = clip_denoised
         self.predict_epsilon = predict_epsilon
 
-        self.register_buffer("betas", betas)
-        self.register_buffer("alphas_cumprod", alphas_cumprod)
-        self.register_buffer("alphas_cumprod_prev", alphas_cumprod_prev)
+        utils.register_buffer(self, "betas", betas)
+        utils.register_buffer(self, "alphas_cumprod", alphas_cumprod)
+        utils.register_buffer(self, "alphas_cumprod_prev", alphas_cumprod_prev)
 
         # calculations for diffusion q(x_t | x_{t-1}) and others
-        self.register_buffer("sqrt_alphas_cumprod", torch.sqrt(alphas_cumprod))
-        self.register_buffer(
+        utils.register_buffer(self, "sqrt_alphas_cumprod", torch.sqrt(alphas_cumprod))
+        utils.register_buffer(self, 
             "sqrt_one_minus_alphas_cumprod", torch.sqrt(1.0 - alphas_cumprod)
         )
-        self.register_buffer(
+        utils.register_buffer(self, 
             "log_one_minus_alphas_cumprod", torch.log(1.0 - alphas_cumprod)
         )
-        self.register_buffer(
+        utils.register_buffer(self, 
             "sqrt_recip_alphas_cumprod", torch.sqrt(1.0 / alphas_cumprod)
         )
-        self.register_buffer(
+        utils.register_buffer(self, 
             "sqrt_recipm1_alphas_cumprod", torch.sqrt(1.0 / alphas_cumprod - 1)
         )
 
@@ -336,19 +309,19 @@ class GaussianDiffusion(pl.LightningModule):
         posterior_variance = (
             betas * (1.0 - alphas_cumprod_prev) / (1.0 - alphas_cumprod)
         )
-        self.register_buffer("posterior_variance", posterior_variance)
+        utils.register_buffer(self, "posterior_variance", posterior_variance)
 
         ## log calculation clipped because the posterior variance
         ## is 0 at the beginning of the diffusion chain
-        self.register_buffer(
+        utils.register_buffer(self, 
             "posterior_log_variance_clipped",
             torch.log(torch.clamp(posterior_variance, min=1e-20)),
         )
-        self.register_buffer(
+        utils.register_buffer(self, 
             "posterior_mean_coef1",
             betas * np.sqrt(alphas_cumprod_prev) / (1.0 - alphas_cumprod),
         )
-        self.register_buffer(
+        utils.register_buffer(self, 
             "posterior_mean_coef2",
             (1.0 - alphas_cumprod_prev) * np.sqrt(alphas) / (1.0 - alphas_cumprod),
         )
@@ -370,7 +343,7 @@ class GaussianDiffusion(pl.LightningModule):
         """
         self.action_weight = action_weight
 
-        dim_weights = torch.ones(self.transition_dim, dtype=torch.float32)
+        dim_weights = torch.ones(self.transition_dim, dtype=torch.float32, device=self.device)
 
         ## set loss coefficients for dimensions of observation
         if weights_dict is None:
@@ -379,7 +352,7 @@ class GaussianDiffusion(pl.LightningModule):
             dim_weights[self.action_dim + ind] *= w
 
         ## decay loss with trajectory timestep: discount**t
-        discounts = discount ** torch.arange(self.horizon, dtype=torch.float)
+        discounts = discount ** torch.arange(self.horizon, dtype=torch.float, device=self.device)
         discounts = discounts / discounts.mean()
         loss_weights = torch.einsum("h,t->ht", discounts, dim_weights)
 
@@ -430,7 +403,7 @@ class GaussianDiffusion(pl.LightningModule):
     def p_sample(self, x, cond, t):
         b, *_ = x.shape
         model_mean, _, model_log_variance = self.p_mean_variance(x=x, cond=cond, t=t)
-        noise = torch.randn_like(x)
+        noise = torch.randn_like(x, device=self.device)
         # no noise when t == 0
         nonzero_mask = (1 - (t == 0).float()).reshape(b, *((1,) * (len(x.shape) - 1)))
         return model_mean + nonzero_mask * (0.5 * model_log_variance).exp() * noise
@@ -447,7 +420,7 @@ class GaussianDiffusion(pl.LightningModule):
 
         progress = utils.Progress(self.n_timesteps) if verbose else utils.Silent()
         for i in reversed(range(0, self.n_timesteps)):
-            timesteps = torch.full((batch_size,), i, dtype=torch.long)
+            timesteps = torch.full((batch_size,), i, dtype=torch.long, device=self.device)
             x = self.p_sample(x, cond, timesteps)
             x = apply_conditioning(x, cond, self.action_dim)
 
@@ -478,7 +451,7 @@ class GaussianDiffusion(pl.LightningModule):
 
     def q_sample(self, x_start, t, noise=None):
         if noise is None:
-            noise = torch.randn_like(x_start)
+            noise = torch.randn_like(x_start, device=self.device)
 
         sample = (
             extract(self.sqrt_alphas_cumprod, t, x_start.shape) * x_start
@@ -488,7 +461,7 @@ class GaussianDiffusion(pl.LightningModule):
         return sample
 
     def p_losses(self, x_start, cond, t):
-        noise = torch.randn_like(x_start)
+        noise = torch.randn_like(x_start, device=self.device)
 
         x_noisy = self.q_sample(x_start=x_start, t=t, noise=noise)
         x_noisy = apply_conditioning(x_noisy, cond, self.action_dim)
@@ -507,7 +480,7 @@ class GaussianDiffusion(pl.LightningModule):
 
     def loss(self, x, cond):
         batch_size = len(x)
-        t = torch.randint(0, self.n_timesteps, (batch_size,)).long()
+        t = torch.randint(0, self.n_timesteps, (batch_size,), device=self.device).long()
         return self.p_losses(x, cond, t)
 
     def forward(self, cond, *args, **kwargs):

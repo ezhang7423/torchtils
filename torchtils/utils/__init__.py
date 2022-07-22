@@ -9,6 +9,8 @@ ModelPrediction = namedtuple("ModelPrediction", ["pred_noise", "pred_x_start"])
 
 # helpers functions
 
+def register_buffer(self, name, val): # register as same type as weights for lightning modules
+    self.register_buffer(name, val.type(self.dtype))
 
 def exists(x):
     """Check that x is not None"""
