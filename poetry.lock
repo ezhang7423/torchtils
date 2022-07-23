@@ -184,7 +184,7 @@ optional = false
 python-versions = "*"
 
 [package.extras]
-test = ["flake8 (==3.7.8)", "hypothesis (==3.55.3)"]
+test = ["hypothesis (==3.55.3)", "flake8 (==3.7.8)"]
 
 [[package]]
 name = "coverage"
@@ -1029,14 +1029,14 @@ packaging = "*"
 torch = ">=1.3.1"
 
 [package.extras]
-all = ["pystoi", "torchvision (>=0.8)", "pycocotools", "sphinx-copybutton (>=0.3)", "nbsphinx (>=0.8)", "docutils (>=0.16)", "sphinxcontrib-fulltoc (>=1.0)", "sphinx-paramlinks (>=0.5.1)", "sphinx-autodoc-typehints (>=1.0)", "sphinx (>=4.0,<5.0)", "myst-parser", "sphinx-togglebutton (>=0.2)", "pandoc (>=1.0)", "sphinxcontrib-mockautodoc", "torchvision", "torch-fidelity", "lpips", "scipy", "pytorch-lightning (>=1.5)", "mypy (>=0.790)", "transformers (>=4.0)", "pytorch-msssim", "scikit-image (>0.17.1)", "fast-bss-eval (>=0.1.0)", "rouge-score (>=0.0.4)", "torch-complex", "bert-score (==0.3.10)", "cloudpickle (>=1.3)", "jiwer (>=2.3.0)", "pypesq", "coverage (>5.2)", "codecov (>=2.1)", "huggingface-hub (<0.7)", "sacrebleu (>=2.0.0)", "pytest-cov (>2.10)", "psutil", "pre-commit (>=1.0)", "requests", "pytest (>=6.0.0,<7.0.0)", "twine (>=3.2)", "scikit-learn (>1.0,<1.1.1)", "pytest-doctestplus (>=0.9.0)", "pytest-timeout", "phmdoctest (>=1.1.1)", "check-manifest", "mir-eval (>=0.6)", "fire", "nltk (>=3.6)", "regex (>=2021.9.24)", "tqdm (>=4.41.0)"]
-audio = ["pystoi"]
-detection = ["torchvision (>=0.8)", "pycocotools"]
-docs = ["sphinx-copybutton (>=0.3)", "nbsphinx (>=0.8)", "docutils (>=0.16)", "sphinxcontrib-fulltoc (>=1.0)", "sphinx-paramlinks (>=0.5.1)", "sphinx-autodoc-typehints (>=1.0)", "sphinx (>=4.0,<5.0)", "myst-parser", "sphinx-togglebutton (>=0.2)", "pandoc (>=1.0)", "sphinxcontrib-mockautodoc"]
-image = ["torchvision", "torch-fidelity", "lpips", "scipy"]
+text = ["tqdm (>=4.41.0)", "regex (>=2021.9.24)", "nltk (>=3.6)"]
+test = ["fire", "mir-eval (>=0.6)", "check-manifest", "phmdoctest (>=1.1.1)", "pytest-timeout", "pytest-doctestplus (>=0.9.0)", "scikit-learn (>1.0,<1.1.1)", "twine (>=3.2)", "pytest (>=6.0.0,<7.0.0)", "requests", "pre-commit (>=1.0)", "psutil", "pytest-cov (>2.10)", "sacrebleu (>=2.0.0)", "huggingface-hub (<0.7)", "codecov (>=2.1)", "coverage (>5.2)", "pypesq", "jiwer (>=2.3.0)", "cloudpickle (>=1.3)", "bert-score (==0.3.10)", "torch-complex", "rouge-score (>=0.0.4)", "pycocotools", "fast-bss-eval (>=0.1.0)", "scikit-image (>0.17.1)", "pytorch-msssim", "transformers (>=4.0)", "mypy (>=0.790)"]
 integrate = ["pytorch-lightning (>=1.5)"]
-test = ["mypy (>=0.790)", "transformers (>=4.0)", "pytorch-msssim", "scikit-image (>0.17.1)", "fast-bss-eval (>=0.1.0)", "pycocotools", "rouge-score (>=0.0.4)", "torch-complex", "bert-score (==0.3.10)", "cloudpickle (>=1.3)", "jiwer (>=2.3.0)", "pypesq", "coverage (>5.2)", "codecov (>=2.1)", "huggingface-hub (<0.7)", "sacrebleu (>=2.0.0)", "pytest-cov (>2.10)", "psutil", "pre-commit (>=1.0)", "requests", "pytest (>=6.0.0,<7.0.0)", "twine (>=3.2)", "scikit-learn (>1.0,<1.1.1)", "pytest-doctestplus (>=0.9.0)", "pytest-timeout", "phmdoctest (>=1.1.1)", "check-manifest", "mir-eval (>=0.6)", "fire"]
-text = ["nltk (>=3.6)", "regex (>=2021.9.24)", "tqdm (>=4.41.0)"]
+image = ["scipy", "lpips", "torch-fidelity", "torchvision"]
+docs = ["sphinxcontrib-mockautodoc", "pandoc (>=1.0)", "sphinx-togglebutton (>=0.2)", "myst-parser", "sphinx (>=4.0,<5.0)", "sphinx-autodoc-typehints (>=1.0)", "sphinx-paramlinks (>=0.5.1)", "sphinxcontrib-fulltoc (>=1.0)", "docutils (>=0.16)", "nbsphinx (>=0.8)", "sphinx-copybutton (>=0.3)"]
+detection = ["pycocotools", "torchvision (>=0.8)"]
+audio = ["pystoi"]
+all = ["tqdm (>=4.41.0)", "regex (>=2021.9.24)", "nltk (>=3.6)", "fire", "mir-eval (>=0.6)", "check-manifest", "phmdoctest (>=1.1.1)", "pytest-timeout", "pytest-doctestplus (>=0.9.0)", "scikit-learn (>1.0,<1.1.1)", "twine (>=3.2)", "pytest (>=6.0.0,<7.0.0)", "requests", "pre-commit (>=1.0)", "psutil", "pytest-cov (>2.10)", "sacrebleu (>=2.0.0)", "huggingface-hub (<0.7)", "codecov (>=2.1)", "coverage (>5.2)", "pypesq", "jiwer (>=2.3.0)", "cloudpickle (>=1.3)", "bert-score (==0.3.10)", "torch-complex", "rouge-score (>=0.0.4)", "fast-bss-eval (>=0.1.0)", "scikit-image (>0.17.1)", "pytorch-msssim", "transformers (>=4.0)", "mypy (>=0.790)", "pytorch-lightning (>=1.5)", "scipy", "lpips", "torch-fidelity", "torchvision", "sphinxcontrib-mockautodoc", "pandoc (>=1.0)", "sphinx-togglebutton (>=0.2)", "myst-parser", "sphinx (>=4.0,<5.0)", "sphinx-autodoc-typehints (>=1.0)", "sphinx-paramlinks (>=0.5.1)", "sphinxcontrib-fulltoc (>=1.0)", "docutils (>=0.16)", "nbsphinx (>=0.8)", "sphinx-copybutton (>=0.3)", "pycocotools", "torchvision (>=0.8)", "pystoi"]
 
 [[package]]
 name = "tqdm"
@@ -1057,7 +1057,7 @@ telegram = ["requests"]
 
 [[package]]
 name = "typer"
-version = "0.4.2"
+version = "0.6.1"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
 category = "main"
 optional = false
@@ -1066,13 +1066,14 @@ python-versions = ">=3.6"
 [package.dependencies]
 click = ">=7.1.1,<9.0.0"
 colorama = {version = ">=0.4.3,<0.5.0", optional = true, markers = "extra == \"all\""}
+rich = {version = ">=10.11.0,<13.0.0", optional = true, markers = "extra == \"all\""}
 shellingham = {version = ">=1.3.0,<2.0.0", optional = true, markers = "extra == \"all\""}
 
 [package.extras]
-test = ["isort (>=5.0.6,<6.0.0)", "black (>=22.3.0,<23.0.0)", "mypy (==0.910)", "pytest-sugar (>=0.9.4,<0.10.0)", "pytest-xdist (>=1.32.0,<2.0.0)", "coverage (>=5.2,<6.0)", "pytest-cov (>=2.10.0,<3.0.0)", "pytest (>=4.4.0,<5.4.0)", "shellingham (>=1.3.0,<2.0.0)"]
+test = ["rich (>=10.11.0,<13.0.0)", "isort (>=5.0.6,<6.0.0)", "black (>=22.3.0,<23.0.0)", "mypy (==0.910)", "pytest-sugar (>=0.9.4,<0.10.0)", "pytest-xdist (>=1.32.0,<2.0.0)", "coverage (>=5.2,<6.0)", "pytest-cov (>=2.10.0,<3.0.0)", "pytest (>=4.4.0,<5.4.0)", "shellingham (>=1.3.0,<2.0.0)"]
 doc = ["mdx-include (>=1.4.1,<2.0.0)", "mkdocs-material (>=8.1.4,<9.0.0)", "mkdocs (>=1.1.2,<2.0.0)"]
 dev = ["pre-commit (>=2.17.0,<3.0.0)", "flake8 (>=3.8.3,<4.0.0)", "autoflake (>=1.3.1,<2.0.0)"]
-all = ["shellingham (>=1.3.0,<2.0.0)", "colorama (>=0.4.3,<0.5.0)"]
+all = ["rich (>=10.11.0,<13.0.0)", "shellingham (>=1.3.0,<2.0.0)", "colorama (>=0.4.3,<0.5.0)"]
 
 [[package]]
 name = "typing-extensions"
@@ -1159,7 +1160,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "c15ecea9f240a13a55405e2b38663a24d72273d6bae5c2e8801caff69cd71e80"
+content-hash = "eb4729f390aa56ff7d67ed94004dc78e2a6602466812ceac89d4927976c5cc83"
 
 [metadata.files]
 absl-py = [
@@ -1968,8 +1969,8 @@ tqdm = [
     {file = "tqdm-4.64.0.tar.gz", hash = "sha256:40be55d30e200777a307a7585aee69e4eabb46b4ec6a4b4a5f2d9f11e7d5408d"},
 ]
 typer = [
-    {file = "typer-0.4.2-py3-none-any.whl", hash = "sha256:023bae00d1baf358a6cc7cea45851639360bb716de687b42b0a4641cd99173f1"},
-    {file = "typer-0.4.2.tar.gz", hash = "sha256:b8261c6c0152dd73478b5ba96ba677e5d6948c715c310f7c91079f311f62ec03"},
+    {file = "typer-0.6.1-py3-none-any.whl", hash = "sha256:54b19e5df18654070a82f8c2aa1da456a4ac16a2a83e6dcd9f170e291c56338e"},
+    {file = "typer-0.6.1.tar.gz", hash = "sha256:2d5720a5e63f73eaf31edaa15f6ab87f35f0690f8ca233017d7d23d743a91d73"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.3.0-py3-none-any.whl", hash = "sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02"},
