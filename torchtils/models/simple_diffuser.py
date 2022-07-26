@@ -265,11 +265,12 @@ class GaussianDiffusion(pl.LightningModule):
         clip_denoised=False,
         predict_epsilon=True,
         dim_mults=(1, 4, 8),
+        dim=32,
         action_weight=1.0,
         loss_discount=1.0,
         loss_weights=None,
     ):
-        model = TemporalUnet(horizon, action_dim + observation_dim, observation_dim, dim_mults=dim_mults)
+        model = TemporalUnet(horizon, action_dim + observation_dim, observation_dim, dim=dim, dim_mults=dim_mults)
         super().__init__()
         self.horizon = horizon
         self.observation_dim = observation_dim
@@ -412,24 +413,24 @@ class GaussianDiffusion(pl.LightningModule):
     def p_sample_loop(self, shape, cond, verbose=True, return_diffusion=False):
 
         batch_size = shape[0]
-        x = torch.randn(shape)
+        x = torch.randn(shape, device=self.device)
         x = apply_conditioning(x, cond, self.action_dim)
 
         if return_diffusion:
             diffusion = [x]
 
-        progress = utils.Progress(self.n_timesteps) if verbose else utils.Silent()
+        # progress = utils.Progress(self.n_timesteps) if verbose else utils.Silent()
         for i in reversed(range(0, self.n_timesteps)):
             timesteps = torch.full((batch_size,), i, dtype=torch.long, device=self.device)
             x = self.p_sample(x, cond, timesteps)
             x = apply_conditioning(x, cond, self.action_dim)
 
-            progress.update({"t": i})
+            # progress.update({"t": i})
 
             if return_diffusion:
                 diffusion.append(x)
 
-        progress.close()
+        # progress.close()
 
         if return_diffusion:
             return x, torch.stack(diffusion, dim=1)

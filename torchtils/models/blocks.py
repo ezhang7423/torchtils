@@ -2,7 +2,6 @@ import math
 
 import torch
 from torch import nn
-
 from einops.layers.torch import Rearrange
 # small helper modules
 #----------------------------------------------------------------------------#

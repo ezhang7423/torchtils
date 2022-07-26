@@ -22,3 +22,6 @@ class EMA(nn.Module):
 
     def set(self, model):
         self._update(model, update_fn=lambda e, m: m)
+
+    def forward(self, *args, **kwargs):
+        return self.module.forward(*args, **kwargs)
