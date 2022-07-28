@@ -65,8 +65,8 @@ class CheckpointEveryEpoch(pl.Callback):
         """ Check if we should save a checkpoint after every train batch """
         epoch = trainer.current_epoch
         if self.prefix is None:
-            filename = f"{epoch=}.ckpt"
+            filename = f"epoch-{epoch}.ckpt"
         else:
-            filename = f"{self.prefix}_{epoch=}.ckpt"
+            filename = f"{self.prefix}_epoch-{epoch}.ckpt"
         ckpt_path = os.path.join(trainer.checkpoint_callback.dirpath, filename)
         trainer.save_checkpoint(ckpt_path)
