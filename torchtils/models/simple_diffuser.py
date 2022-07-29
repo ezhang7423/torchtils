@@ -410,7 +410,7 @@ class GaussianDiffusion(pl.LightningModule):
         return model_mean + nonzero_mask * (0.5 * model_log_variance).exp() * noise
 
     @torch.no_grad()
-    def p_sample_loop(self, shape, cond, verbose=True, return_diffusion=False):
+    def p_sample_loop(self, shape, cond, verbose=False, return_diffusion=False):
 
         batch_size = shape[0]
         x = torch.randn(shape, device=self.device)
@@ -419,18 +419,18 @@ class GaussianDiffusion(pl.LightningModule):
         if return_diffusion:
             diffusion = [x]
 
-        # progress = utils.Progress(self.n_timesteps) if verbose else utils.Silent()
+        progress = utils.Progress(self.n_timesteps) if verbose else utils.Silent()
         for i in reversed(range(0, self.n_timesteps)):
             timesteps = torch.full((batch_size,), i, dtype=torch.long, device=self.device)
             x = self.p_sample(x, cond, timesteps)
             x = apply_conditioning(x, cond, self.action_dim)
 
-            # progress.update({"t": i})
+            progress.update({"t": i})
 
             if return_diffusion:
                 diffusion.append(x)
 
-        # progress.close()
+        progress.close()
 
         if return_diffusion:
             return x, torch.stack(diffusion, dim=1)
