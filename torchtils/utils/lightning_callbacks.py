@@ -41,7 +41,7 @@ class CheckpointEveryNSteps(pl.Callback):
             trainer.save_checkpoint(ckpt_path)
 
 
-class CheckpointEveryEpoch(pl.Callback):
+class CheckpointNEpoch(pl.Callback):
     """
     Save a checkpoint every epoch, instead of Lightning's default that checkpoints
     based on validation loss.
@@ -50,6 +50,7 @@ class CheckpointEveryEpoch(pl.Callback):
     def __init__(
         self,
         prefix="N-Step-Checkpoint",
+        freq=1
     ):
         """
         Args:
@@ -60,13 +61,16 @@ class CheckpointEveryEpoch(pl.Callback):
                 default filename, don't use ours.
         """
         self.prefix = prefix
+        self.freq = freq 
 
     def on_train_epoch_start(self, trainer: pl.Trainer, _):
         """ Check if we should save a checkpoint after every train batch """
         epoch = trainer.current_epoch
-        if self.prefix is None:
-            filename = f"epoch-{epoch}.ckpt"
-        else:
-            filename = f"{self.prefix}_epoch-{epoch}.ckpt"
-        ckpt_path = os.path.join(trainer.checkpoint_callback.dirpath, filename)
-        trainer.save_checkpoint(ckpt_path)
+        if epoch % self.freq == 0:        
+            if self.prefix is None:
+                filename = f"epoch-{epoch}.ckpt"
+            else:
+                filename = f"{self.prefix}_epoch-{epoch}.ckpt"
+            ckpt_path = os.path.join(trainer.checkpoint_callback.dirpath, filename)
+            trainer.save_checkpoint(ckpt_path)
+
